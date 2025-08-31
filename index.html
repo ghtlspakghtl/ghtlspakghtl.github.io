@@ -104,7 +104,7 @@
         <div class="flex justify-between items-center mb-4">
             <h2 class="text-2xl font-bold text-gray-800">최고 기록 랭킹</h2>
             <button id="admin-login-button" class="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded transition">
-                랭킹 등록하기 (관리자)
+                랭킹 관리 (관리자)
             </button>
         </div>
         <ol id="ranking-list" class="list-decimal list-inside text-lg text-gray-600">
@@ -148,16 +148,22 @@
         </div>
         
         <div id="ranking-form-container" class="hidden">
-            <h3 class="text-xl font-bold mb-4">랭킹 등록</h3>
+            <h3 class="text-xl font-bold mb-4">랭킹 관리</h3>
             <p class="text-sm text-gray-500 mb-2">이름과 버틴 시간을 입력하세요. (분:초)</p>
             <input type="text" id="ranking-name" placeholder="이름" class="w-full p-2 border border-gray-300 rounded mb-2">
             <input type="text" id="ranking-time" placeholder="예) 10:30" class="w-full p-2 border border-gray-300 rounded mb-4">
-            <button id="submit-ranking" class="w-full bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
-                등록
+            <button id="submit-ranking" class="w-full bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mb-4">
+                랭킹 등록
+            </button>
+            <button id="delete-rankings" class="w-full bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition">
+                랭킹 전체 삭제
             </button>
         </div>
     </div>
 </div>
+
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
 
 <script>
     const gameData = [
@@ -260,10 +266,56 @@
     const rankingNameInput = document.getElementById('ranking-name');
     const rankingTimeInput = document.getElementById('ranking-time');
     const submitRankingBtn = document.getElementById('submit-ranking');
+    const deleteRankingsBtn = document.getElementById('delete-rankings');
     const rankingList = document.getElementById('ranking-list');
 
     const ADMIN_USERNAME = 'choda10094zi';
     const ADMIN_PASSWORD = 'choda10094zi@#!';
+
+    // ** IMPORTANT: REPLACE THESE WITH YOUR OWN FIREBASE CONFIGURATION **
+    const firebaseConfig = {
+apiKey: "AIzaSyBscX0zNou6wy9lFLRgeRjp60Rw3tAFdko",
+  authDomain: "database-5b3b0.firebaseapp.com",
+  databaseURL: "https://database-5b3b0-default-rtdb.firebaseio.com",
+  projectId: "database-5b3b0",
+  storageBucket: "database-5b3b0.firebasestorage.app",
+  messagingSenderId: "194730066124",
+  appId: "1:194730066124:web:34e884d814e64492038269",
+  measurementId: "G-JNRY327PWM"
+
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const rankingsRef = db.ref('rankings');
+
+    function renderRankings() {
+        rankingsRef.once('value', (snapshot) => {
+            const rankings = snapshot.val() ? Object.values(snapshot.val()) : [];
+            rankingList.innerHTML = '';
+            if (rankings.length === 0) {
+                rankingList.innerHTML = '<li class="text-gray-500 italic">아직 등록된 랭킹이 없습니다.</li>';
+            } else {
+                rankings.sort((a, b) => {
+                    const timeToSeconds = (timeStr) => {
+                        const parts = timeStr.split(':');
+                        if (parts.length === 2) {
+                            return parseInt(parts[0]) * 60 + parseInt(parts[1]);
+                        }
+                        return 0;
+                    };
+                    return timeToSeconds(b.time) - timeToSeconds(a.time);
+                });
+                rankings.forEach((rank, index) => {
+                    const li = document.createElement('li');
+                    li.className = 'mb-1';
+                    li.innerHTML = `<span class="font-bold">${index + 1}. ${rank.name}</span> - ${rank.time}`;
+                    rankingList.appendChild(li);
+                });
+            }
+        });
+    }
 
     // Open Modal
     adminLoginBtn.onclick = function() {
@@ -296,7 +348,7 @@
     }
 
     // Handle Ranking Submission
-    submitRankingBtn.onclick = function() {
+    submitRankingBtn.onclick = async function() {
         const name = rankingNameInput.value.trim();
         const time = rankingTimeInput.value.trim();
 
@@ -305,43 +357,37 @@
             return;
         }
 
-        const newRanking = { name: name, time: time };
-        let rankings = JSON.parse(localStorage.getItem('gameRankings')) || [];
-        rankings.push(newRanking);
-
-        // Sort rankings by time (assuming time is in MM:SS format)
-        rankings.sort((a, b) => {
-            const timeToSeconds = (timeStr) => {
-                const parts = timeStr.split(':');
-                if (parts.length === 2) {
-                    return parseInt(parts[0]) * 60 + parseInt(parts[1]);
-                }
-                return 0;
-            };
-            return timeToSeconds(b.time) - timeToSeconds(a.time);
-        });
-
-        localStorage.setItem('gameRankings', JSON.stringify(rankings));
-        renderRankings();
-        adminModal.style.display = 'none';
-        alert('랭킹이 등록되었습니다!');
+        const newRanking = { name: name, time: time, timestamp: Date.now() };
+        rankingsRef.push(newRanking)
+            .then(() => {
+                alert('랭킹이 등록되었습니다!');
+                renderRankings();
+                adminModal.style.display = 'none';
+            })
+            .catch(error => {
+                console.error("Error adding ranking: ", error);
+                alert("랭킹 등록에 실패했습니다.");
+            });
     }
 
-    function renderRankings() {
-        const rankings = JSON.parse(localStorage.getItem('gameRankings')) || [];
-        rankingList.innerHTML = '';
-        if (rankings.length === 0) {
-            rankingList.innerHTML = '<li class="text-gray-500 italic">아직 등록된 랭킹이 없습니다.</li>';
-        } else {
-            rankings.forEach((rank, index) => {
-                const li = document.createElement('li');
-                li.className = 'mb-1';
-                li.innerHTML = `<span class="font-bold">${index + 1}. ${rank.name}</span> - ${rank.time}`;
-                rankingList.appendChild(li);
-            });
+    // Handle Ranking Deletion
+    deleteRankingsBtn.onclick = async function() {
+        const confirmDelete = confirm('정말로 모든 랭킹을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.');
+        if (confirmDelete) {
+            rankingsRef.set(null)
+                .then(() => {
+                    alert('모든 랭킹이 삭제되었습니다.');
+                    renderRankings();
+                    adminModal.style.display = 'none';
+                })
+                .catch(error => {
+                    console.error("Error deleting rankings: ", error);
+                    alert("랭킹 삭제에 실패했습니다.");
+                });
         }
     }
 
+    // Initial render
     renderRankings();
 </script>
 
