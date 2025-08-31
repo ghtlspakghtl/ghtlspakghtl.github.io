@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>정보 2학기 게임 만들기 프로젝트</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f0f4f8;
+            color: #334e68;
+        }
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            padding: 1rem;
+        }
+        .card {
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease-in-out;
+            cursor: pointer;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .active-card {
+            border: 2px solid #4f46e5;
+        }
+        .detail-view {
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            padding: 1.5rem;
+            min-height: 250px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container py-8">
+    <header class="text-center mb-8">
+        <h1 class="text-4xl font-bold text-indigo-700">정보 2학기 게임 만들기 프로젝트</h1>
+        <p class="mt-2 text-xl font-medium text-gray-600">팀원 및 기획 문서</p>
+    </header>
+
+    <section class="mb-12 p-6 bg-white rounded-xl shadow-md">
+        <h2 class="text-2xl font-bold text-gray-800 mb-4">프로젝트 개요</h2>
+        <p class="text-lg text-gray-600 leading-relaxed">
+            디벗함에서 디벗을 훔치려는 도둑 친구(몬스터)를 막는 게임입니다. 몬스터가 중앙에 있는 디벗함에 접근하지 못하도록 물리치고, 최대한 오래 버텨 랭킹에 오르는 것이 목표입니다. 몬스터를 물리치면 장비 업그레이드나 디벗함 체력 회복 아이템을 얻을 수 있습니다. 또한, 중간 보스몹이 등장하고, 몬스터 도감 시스템도 구현될 예정입니다.
+        </p>
+        <div class="mt-6">
+            <h3 class="text-xl font-semibold text-gray-700">팀원</h3>
+            <ul class="list-disc list-inside mt-2 text-gray-600">
+               <li>이정우(10218): 주 개발자, 디자이너, 발표자, 테스터, 디렉터, 부 조장, 기획자</li>
+               <li>박민재(호시)(10211): 부 개발자, 조장, 발표자, 기획자</li>
+               <li>김하람(10210): 디자이너</li>
+               <li>안희원(10215): 테스터</li>
+            </ul>
+        </div>
+    </section>
+
+    <section id="character-section" class="mb-12">
+        <div class="text-center mb-6">
+             <h2 class="text-3xl font-bold text-indigo-700">게임 캐릭터 및 아이템</h2>
+             <p class="text-md text-gray-500 mt-1">카드를 클릭하여 상세 정보를 확인하세요.</p>
+        </div>
+        <div id="cards-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+        </div>
+    </section>
+
+    <section id="detail-view" class="detail-view">
+        <div class="flex flex-col md:flex-row items-center">
+            <div id="detail-image-container" class="md:w-1/3 p-4 flex justify-center items-center">
+                </div>
+            <div class="md:w-2/3 p-4">
+                <h3 id="detail-title" class="text-3xl font-bold text-gray-800 mb-2"></h3>
+                <p id="detail-description" class="text-lg text-gray-600 mb-4"></p>
+                <ul id="detail-stats" class="space-y-2 text-gray-700">
+                    </ul>
+            </div>
+        </div>
+    </section>
+</div>
+
+<script>
+    const gameData = [
+        { id: 'dibot-box', type: '아군', name: '디벗함', description: '게임의 핵심 목표물. 이 아이템을 적으로부터 지켜야 합니다.', stats: { 체력: '150HP', 공격력: '공격 X' }, image: 'https://i.ibb.co/6Z80v5X/dibot-box.png' },
+        { id: 'player', type: '아군', name: '플레이어', description: '게임을 진행하는 주요 캐릭터. 원거리 공격 능력이 있습니다.', stats: { 레벨: '시작 기준', 체력: '50HP', 공격력: '5', 쿨타임: '0.5' }, image: 'https://i.ibb.co/F85050C/player.png' },
+        { id: 'cannon', type: '아군', name: '설치형 대포', description: '적을 공격하기 위해 설치하는 아군 유닛입니다. 원거리 공격을 합니다.', stats: { 레벨: '3LV', 체력: '35HP', 공격력: '5', 쿨타임: '0.5' }, image: 'https://i.ibb.co/3pQ0q2Y/cannon.png' },
+        { id: 'info-book', type: '적군', name: '정보책', description: '자신이 디벗인줄 알고 디벗함에 들어가려고 하는 흔한 몬스터입니다. 근접 공격을 합니다.', stats: { 레벨: '1LV', 체력: '5HP', 공격력: '1' }, image: 'https://i.ibb.co/F4F3b4Q/info-book.png' },
+        { id: 'contaminated-dibot', type: '적군', name: '오염된 디벗', description: '자신의 집으로 돌아가려고 디벗함에 돌격하는 몬스터입니다. 공격 능력은 없습니다.', stats: { 레벨: '1LV', 체력: '5HP', 공격력: '15' }, image: 'https://i.ibb.co/Y2Bv56s/contaminated-dibot.png' },
+        { id: 'laptop', type: '적군', name: '노트북', description: '이동 속도가 매우 빠르고 공격력이 강한 몬스터입니다. 하지만 체력이 낮습니다.', stats: { 레벨: '1LV', 체력: '10HP', 공격력: '30' }, image: 'https://i.ibb.co/3mY9w0S/laptop.png' },
+        { id: 'blue-pencase', type: '적군', name: '파란 필통', description: '공격 속도는 느리지만 한 방 데미지가 강한 근접 공격형 몬스터입니다.', stats: { 레벨: '2LV', 공격력: '20' }, image: 'https://i.ibb.co/p30N2cQ/blue-pencase.png' },
+        { id: 'red-pencase', type: '적군', name: '빨간 필통', description: '오염된 디벗처럼 디벗함으로 돌격하는 몬스터입니다.', stats: { 레벨: '2LV' }, image: 'https://i.ibb.co/p30N2cQ/red-pencase.png' },
+        { id: 'mouse', type: '적군', name: '마우스', description: '떼로 몰려다니는 물량형 몬스터입니다. 5마리씩 나타납니다.', stats: { 레벨: '3LV', 체력: '5HP', 공격력: '1' }, image: 'https://i.ibb.co/xL3tM30/mouse.png' },
+        { id: 'boss', type: '적군', name: '보스', description: '게임 중간에 등장하는 강력한 몬스터입니다.', stats: {}, image: 'https://i.ibb.co/6P2T8k5/boss.png' }
+    ];
+
+    const cardsGrid = document.getElementById('cards-grid');
+    const detailTitle = document.getElementById('detail-title');
+    const detailDescription = document.getElementById('detail-description');
+    const detailStats = document.getElementById('detail-stats');
+    const detailImageContainer = document.getElementById('detail-image-container');
+
+    function renderCards() {
+        cardsGrid.innerHTML = '';
+        gameData.forEach(item => {
+            const card = document.createElement('div');
+            card.className = `card p-4 text-center ${item.type === '적군' ? 'bg-red-50' : 'bg-blue-50'}`;
+            card.dataset.id = item.id;
+            card.innerHTML = `
+                <h3 class="text-lg font-bold text-gray-800">${item.name}</h3>
+                <p class="text-sm text-gray-500">${item.type}</p>
+            `;
+            cardsGrid.appendChild(card);
+        });
+    }
+
+    function setActiveCard(id) {
+        document.querySelectorAll('.card').forEach(card => {
+            card.classList.remove('active-card');
+        });
+        const activeCard = document.querySelector(`.card[data-id="${id}"]`);
+        if (activeCard) {
+            activeCard.classList.add('active-card');
+        }
+    }
+
+    function updateDetailView(data) {
+        detailTitle.textContent = data.name;
+        detailDescription.textContent = data.description;
+        
+        detailStats.innerHTML = '';
+        if (Object.keys(data.stats).length > 0) {
+            for (const [key, value] of Object.entries(data.stats)) {
+                const li = document.createElement('li');
+                li.className = 'text-gray-700';
+                li.innerHTML = `<span class="font-semibold">${key}:</span> ${value}`;
+                detailStats.appendChild(li);
+            }
+        } else {
+            const li = document.createElement('li');
+            li.className = 'text-gray-500 italic';
+            li.textContent = '정보 없음';
+            detailStats.appendChild(li);
+        }
+        
+        detailImageContainer.innerHTML = '';
+        if (data.image) {
+            const img = document.createElement('img');
+            img.src = data.image;
+            img.alt = data.name;
+            img.className = 'w-full h-auto rounded-lg shadow-md';
+            detailImageContainer.appendChild(img);
+        }
+    }
+
+    cardsGrid.addEventListener('click', (e) => {
+        const card = e.target.closest('.card');
+        if (card) {
+            const id = card.dataset.id;
+            const selectedData = gameData.find(item => item.id === id);
+            if (selectedData) {
+                setActiveCard(id);
+                updateDetailView(selectedData);
+            }
+        }
+    });
+
+    renderCards();
+    updateDetailView(gameData[0]); // Initial view
+    setActiveCard(gameData[0].id);
+
+</script>
+
+</body>
+</html>
