@@ -292,11 +292,13 @@ apiKey: "AIzaSyBscX0zNou6wy9lFLRgeRjp60Rw3tAFdko",
 
     function renderRankings() {
         rankingsRef.once('value', (snapshot) => {
-            const rankings = snapshot.val() ? Object.values(snapshot.val()) : [];
+            let rankings = snapshot.val() ? Object.values(snapshot.val()) : [];
             rankingList.innerHTML = '';
+            
             if (rankings.length === 0) {
                 rankingList.innerHTML = '<li class="text-gray-500 italic">아직 등록된 랭킹이 없습니다.</li>';
             } else {
+                // Sort by time (descending)
                 rankings.sort((a, b) => {
                     const timeToSeconds = (timeStr) => {
                         const parts = timeStr.split(':');
@@ -307,6 +309,10 @@ apiKey: "AIzaSyBscX0zNou6wy9lFLRgeRjp60Rw3tAFdko",
                     };
                     return timeToSeconds(b.time) - timeToSeconds(a.time);
                 });
+
+                // Display only the top 5
+                rankings = rankings.slice(0, 5);
+                
                 rankings.forEach((rank, index) => {
                     const li = document.createElement('li');
                     li.className = 'mb-1';
