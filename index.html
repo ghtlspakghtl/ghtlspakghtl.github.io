@@ -176,27 +176,27 @@
         { id: 'contaminated-dibot', type: '적군', name: '오염된 디벗', description: '자신의 집으로 돌아가려고 디벗함에 돌격하는 몬스터입니다. 공격 능력은 없습니다.', stats: { 레벨: '1LV', 체력: '5HP', 공격력: '15' }, image: 'https://i.ibb.co/Y2Bv56s/contaminated-dibot.png' },
         { id: 'laptop', type: '적군', name: '노트북', description: '이동 속도가 매우 빠르고 공격력이 강한 몬스터입니다. 하지만 체력이 낮습니다.', stats: { 레벨: '1LV', 체력: '10HP', 공격력: '30' }, image: '해킹 노트북.jpg' },
         { id: 'blue-pencase', type: '적군', name: '파란 필통', description: '공격 속도는 느리지만 한 방 데미지가 강한 근접 공격형 몬스터입니다.', stats: { 레벨: '2LV', 공격력: '20' }, image: 'https://i.ibb.co/p30N2cQ/blue-pencase.png' },
-        { id: 'red-pencase', type: '적군', name: '빨간 필통', description: '오염된 디벗처럼 디벗함으로 돌격하는 몬ㅜ호스터입니다.', stats: { 레벨: '2LV' }, image: 'https://i.ibb.co/p30N2cQ/red-pencase.png' },
-        { id: 'mouse', type: '적군', name: '마우스', description: '떼로 몰려다니는 물량형 몬스ㅇㅎ터입니다. 5마리씩 나타납니다.', stats: { 레벨: '3LV', 체력: '5HP', 공격력: '1' }, image: 'https://i.ibb.co/xL3tM30/mouse.png' },
-        { id: 'boss', type: '적군', name: '보스', description: '게임 중간에 등장하ㅓㅇㅎ는 강력한 몬스터입니다.', stats: {},ㅇㅎ image: 'https://i.ibb.co/6P2T8k5/boss.png' }
-    ];ㅓㅇㅡㅇ호
+        { id: 'red-pencase', type: '적군', name: '빨간 필통', description: '오염된 디벗처럼 디벗함으로 돌격하는 몬스터입니다.', stats: { 레벨: '2LV' }, image: 'https://i.ibb.co/p30N2cQ/red-pencase.png' },
+        { id: 'mouse', type: '적군', name: '마우스', description: '떼로 몰려다니는 물량형 몬스터입니다. 5마리씩 나타납니다.', stats: { 레벨: '3LV', 체력: '5HP', 공격력: '1' }, image: 'https://i.ibb.co/xL3tM30/mouse.png' },
+        { id: 'boss', type: '적군', name: '보스', description: '게임 중간에 등장하는 강력한 몬스터입니다.', stats: {}, image: 'https://i.ibb.co/6P2T8k5/boss.png' }
+    ];
 
-    const cardsGrid = document.getElementById('cards-grid');ㅜㅡ홍ㅡ
-    const detailTitle = document.getElementById('detail-title');ㅇ후
-    const detailDescription = document.getElementById('detail-descripㅡtion');ㄷ쇼ㅜㅡ
-    const detailStats = document.getElementById('ㅡdetail-stats');ㅡ
-    const detailImageContainer = document.getElementById('detail-image-conㅜtainer');
-교ㄷ서ㅡㅛ
+    const cardsGrid = document.getElementById('cards-grid');
+    const detailTitle = document.getElementById('detail-title');
+    const detailDescription = document.getElementById('detail-description');
+    const detailStats = document.getElementById('detail-stats');
+    const detailImageContainer = document.getElementById('detail-image-container');
+
     function renderCards() {
-        cardsGrid.innerHTML = ㅗㅡ'';ㅜㅎ
-        gameData.forEach(item => {ㅎㄹㅓㅇ흐
-            const card = document.createEㅡlement('div');
-            card.className 쇼= `card p-4 text-center ${item.type === '적군' ? 'bg-red-50' : 'bg-blue-50'}`;
+        cardsGrid.innerHTML = '';
+        gameData.forEach(item => {
+            const card = document.createElement('div');
+            card.className = `card p-4 text-center ${item.type === '적군' ? 'bg-red-50' : 'bg-blue-50'}`;
             card.dataset.id = item.id;
-            card.innerHTML = `ㅇ호ㅗ
-                <h3 class="text-lg font-bold tㄴext-gray-800">${item.name}</h3>
+            card.innerHTML = `
+                <h3 class="text-lg font-bold text-gray-800">${item.name}</h3>
                 <p class="text-sm text-gray-500">${item.type}</p>
-            `;ㅇ호ㅜ
+            `;
             cardsGrid.appendChild(card);
         });
     }
@@ -219,35 +219,35 @@
         if (Object.keys(data.stats).length > 0) {
             for (const [key, value] of Object.entries(data.stats)) {
                 const li = document.createElement('li');
-                li.className = 'text-gray- ㅜ700';
+                li.className = 'text-gray-700';
                 li.innerHTML = `<span class="font-semibold">${key}:</span> ${value}`;
-                detailStats.append Child(li);
+                detailStats.appendChild(li);
             }
         } else {
             const li = document.createElement('li');
             li.className = 'text-gray-500 italic';
             li.textContent = '정보 없음';
             detailStats.appendChild(li);
-        }ㅎ뤃ㄹㅜ퓨 ㅜㅌㄹ
+        }
         
-        detailImageContainer.innerHTM 뤃ㄹ추픁ㅠL = '';
-        if (data.image) {퓨후호ㅜ
+        detailImageContainer.innerHTML = '';
+        if (data.image) {
             const img = document.createElement('img');
-            img.src = data.image;홀
-            img.alt = data.name;호ㅜ ㅜ
+            img.src = data.image;
+            img.alt = data.name;
             img.className = 'w-full h-auto rounded-lg shadow-md';
             detailImageContainer.appendChild(img);
-        }ㅜ호ㅜ  섷호ㅜ
+        }
     }
 
-    cardsGrid.addEventListener('click', (ㅜㅊㅎㅜㅡe) => {
-        const card = e.target.clㅜ osest('.card');
+    cardsGrid.addEventListener('click', (e) => {
+        const card = e.target.closest('.card');
         if (card) {
             const id = card.dataset.id;
             const selectedData = gameData.find(item => item.id === id);
             if (selectedData) {
                 setActiveCard(id);
-                updateDetailView(selectedㅜㄹ후ㅊㅎㅜData);
+                updateDetailView(selectedData);
             }
         }
     });
@@ -262,16 +262,15 @@
     const closeBtn = document.querySelector('.close-button');
     const usernameInput = document.getElementById('admin-username');
     const passwordInput = document.getElementById('admin-password');
-    const submitPasswordBtn = document.getElementB ㅠㅜㅜ ㅜ 휴ㅜ후 yId('submit-password');
+    const submitPasswordBtn = document.getElementById('submit-password');
     const loginForm = document.getElementById('login-form-container');
     const rankingForm = document.getElementById('ranking-form-container');
     const rankingNameInput = document.getElementById('ranking-name');
     const rankingTimeInput = document.getElementById('ranking-time');
-    const submitRankingBtn = docum ㅜㅎㄹ ㅜㅎㄹ ㅜㅎㄹ ㅜ후 후 ent.getElementByI나러ㅠㅑㅣ옾시뎌ㅑ개ㅓ휴ㅜ라,ㅣㅡㅗㅠ;ㅣㄹㅎ ㅜㅎ￦ㅇ￦ㅜ ㅅ고ㅗ,ㅣㅈㅇㄹ라ㅠ[
-ㅇ흐ㅗ
+    const submitRankingBtn = document.getElementById('submit-ranking');
     const deleteRankingsBtn = document.getElementById('delete-rankings');
     const rankingList = document.getElementById('ranking-list');
-후 호 ㅜㅎㅗ
+
     const ADMIN_USERNAME = 'choda10094zi';
     const ADMIN_PASSWORD = 'choda10094zi@#!';
 
@@ -291,7 +290,7 @@ apiKey: "AIzaSyBscX0zNou6wy9lFLRgeRjp60Rw3tAFdko",
     // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
-    const rankingsRef'rankings');
+    const rankingsRef = db.ref('rankings');
 
     function renderRankings() {
         rankingsRef.once('value', (snapshot) => {
@@ -301,7 +300,7 @@ apiKey: "AIzaSyBscX0zNou6wy9lFLRgeRjp60Rw3tAFdko",
             if (rankings.length === 0) {
                 rankingList.innerHTML = '<li class="text-gray-500 italic">아직 등록된 랭킹이 없습니다.</li>';
             } else {
-                // Sort by time ()
+                // Sort by time (descending)
                 rankings.sort((a, b) => {
                     const timeToSeconds = (timeStr) => {
                         const parts = timeStr.split(':');
@@ -319,7 +318,7 @@ apiKey: "AIzaSyBscX0zNou6wy9lFLRgeRjp60Rw3tAFdko",
                 rankings.forEach((rank, index) => {
                     const li = document.createElement('li');
                     li.className = 'mb-1';
-                    li.innerHTML =ss="font-bold">${index + 1}. ${rank.name}</span> - ${rank.time}`;
+                    li.innerHTML = `<span class="font-bold">${index + 1}. ${rank.name}</span> - ${rank.time}`;
                     rankingList.appendChild(li);
                 });
             }
@@ -329,7 +328,7 @@ apiKey: "AIzaSyBscX0zNou6wy9lFLRgeRjp60Rw3tAFdko",
     // Open Modal
     adminLoginBtn.onclick = function() {
         adminModal.style.display = 'block';
-        loassList.remove('hidden');
+        loginForm.classList.remove('hidden');
         rankingForm.classList.add('hidden');
         usernameInput.value = '';
         passwordInput.value = '';
@@ -340,7 +339,7 @@ apiKey: "AIzaSyBscX0zNou6wy9lFLRgeRjp60Rw3tAFdko",
         adminModal.style.display = 'none';
     }
     window.onclick = function(event) {
-        if (eve== adminModal) {
+        if (event.target == adminModal) {
             adminModal.style.display = 'none';
         }
     }
@@ -349,7 +348,7 @@ apiKey: "AIzaSyBscX0zNou6wy9lFLRgeRjp60Rw3tAFdko",
     submitPasswordBtn.onclick = function() {
         if (usernameInput.value === ADMIN_USERNAME && passwordInput.value === ADMIN_PASSWORD) {
             alert('로그인 성공!');
-            loginF.add('hidden');
+            loginForm.classList.add('hidden');
             rankingForm.classList.remove('hidden');
         } else {
             alert('아이디 또는 비밀번호가 틀렸습니다.');
@@ -358,7 +357,7 @@ apiKey: "AIzaSyBscX0zNou6wy9lFLRgeRjp60Rw3tAFdko",
 
     // Handle Ranking Submission
     submitRankingBtn.onclick = async function() {
-        const ngNameInput.value.trim();
+        const name = rankingNameInput.value.trim();
         const time = rankingTimeInput.value.trim();
 
         if (name === '' || time === '') {
@@ -368,7 +367,7 @@ apiKey: "AIzaSyBscX0zNou6wy9lFLRgeRjp60Rw3tAFdko",
 
         const newRanking = { name: name, time: time, timestamp: Date.now() };
         rankingsRef.push(newRanking)
-            .t {
+            .then(() => {
                 alert('랭킹이 등록되었습니다!');
                 renderRankings();
                 adminModal.style.display = 'none';
@@ -379,15 +378,16 @@ apiKey: "AIzaSyBscX0zNou6wy9lFLRgeRjp60Rw3tAFdko",
             });
     }
 
-    // Handle Deletion
+    // Handle Ranking Deletion
     deleteRankingsBtn.onclick = async function() {
         const confirmDelete = confirm('정말로 모든 랭킹을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.');
         if (confirmDelete) {
             rankingsRef.set(null)
-                {
+                .then(() => {
                     alert('모든 랭킹이 삭제되었습니다.');
                     renderRankings();
-                    adminModal.style.display = 'none';
+                    adminModal.style.display = 'none';
+                })
                 .catch(error => {
                     console.error("Error deleting rankings: ", error);
                     alert("랭킹 삭제에 실패했습니다.");
@@ -399,7 +399,7 @@ apiKey: "AIzaSyBscX0zNou6wy9lFLRgeRjp60Rw3tAFdko",
     renderRankings();
 </script>
 
-</bodytml>
+</body>
+</html>
 
 
-@@@SEX@@@
